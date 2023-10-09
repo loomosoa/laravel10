@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\OrderCreatedEvent;
+use App\Http\Requests\Order\StoreRequest;
 use App\Models\Order;
 use Illuminate\Http\Request;
 
@@ -12,7 +14,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        //
+        return Order::all();
     }
 
     /**
@@ -26,9 +28,14 @@ class OrderController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        //
+        $data = $request->validated();
+        $order = Order::create($data);
+
+        event(new OrderCreatedEvent($order));
+
+        return redirect("/orders/create");
     }
 
     /**
